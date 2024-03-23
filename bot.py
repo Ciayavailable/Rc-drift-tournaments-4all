@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
+from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats
 from aiogram.filters.command import Command
 from dotenv import dotenv_values
 
@@ -12,31 +13,29 @@ bot = Bot(token=config["TG_TOKEN"])
 # Диспетчер
 dp = Dispatcher()
 
-# Хэндлер на команду /start
-@dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-    kb = [
-        [types.KeyboardButton(text="С пюрешкой")],
-        [types.KeyboardButton(text="Без пюрешки")]
+
+async def set_bot_commands(bot: Bot):
+    commands = [
+        BotCommand(command="start", description="Перезапустить бота"),
+        BotCommand(command="help", description="Помощь"),
     ]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
-    await message.answer("Как подавать котлеты?", reply_markup=keyboard)
+    await bot.set_my_commands(commands=commands, scope=BotCommandScopeAllPrivateChats())
 
-# Хэндлер на команду /test1
-@dp.message(Command("test1"))
-async def cmd_test1(message: types.Message):
-    await message.reply("Test 1")
 
-# Хэндлер на команду /test2
-@dp.message(Command("test2"))
-async def cmd_test2(message: types.Message):
-    await message.answer("Test 2")
+@dp.message(Command("start"))
+async def start(message: types.Message):
+    await message.answer("Привет!")
+
+
+@dp.message(Command("help"))
+async def start(message: types.Message):
+    await message.answer("Ты молодец, у тебя все получится!")
 
 
 # Запуск процесса поллинга новых апдейтов
 async def main():
     await dp.start_polling(bot)
 
+
 if __name__ == "__main__":
     asyncio.run(main())
-
