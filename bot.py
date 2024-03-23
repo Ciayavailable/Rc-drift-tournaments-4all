@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher, types
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats
 from aiogram.filters.command import Command
 from dotenv import dotenv_values
@@ -24,8 +25,20 @@ async def set_bot_commands(bot: Bot):
 
 @dp.message(Command("start"))
 async def start(message: types.Message):
-    await message.answer("Привет!")
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="Создать сетку",
+        callback_data="grid")
+    )
+    await message.answer("Привет! Ты зашел в бота rc tournaments 4all, что ты хочешь от нас?",
+         reply_markup=builder.as_markup()                 
+    )
 
+@dp.callback_query(F.data == "grid")
+async def send_grid(callback: types.CallbackQuery):
+    await callback.message.answer(text="Введите имена пилотов одним сообщением.")
+    await callback.answer()
+    
 
 @dp.message(Command("help"))
 async def start(message: types.Message):
